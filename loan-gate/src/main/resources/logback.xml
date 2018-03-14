@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
+
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+
+    <property resource="log.properties"/>
+
+    <property name="LOG_FILE"
+              value="${LOG_FILE:-${LOG_DIR:-${java.io.tmpdir:-'/tmp'}/}em-payment-gate-web-service.log}"/>
+    <property name="PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} ${PID:- } [%t] %level: %-40.40logger{39}: %m%n%wex"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>${PATTERN}</pattern>
+        </layout>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}</file>
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${LOG_FILE}.%i.zip</fileNamePattern>
+            <maxIndex>${logging.max.index:-20}</maxIndex>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>${logging.max.size:-10MB}</maxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+
+    <!--Levels: TRACE DEBUG WARN ERROR-->
+
+    <!--LoanGate root logs-->
+    <logger name="com.company">
+        <level value="DEBUG"/>
+    </logger>
+
+    <!--Spring logs-->
+    <logger name="org.springframework">
+        <level value="INFO"/>
+    </logger>
+
+    <root>
+        <level value="INFO"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>

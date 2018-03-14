@@ -1,0 +1,13 @@
+group 'com.company.loan'
+
+buildscript {
+    repositories {
+        jcenter()
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+dependencies {
+}
+

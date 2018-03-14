@@ -1,0 +1,71 @@
+group 'com.company.loan'
+
+buildscript {
+    repositories {
+        jcenter()
+        mavenLocal()
+        mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url "http://repo.spring.io/libs-snapshot" }
+        maven { url "http://repo.spring.io/release" }
+        maven { url "http://repo.spring.io/milestone" }
+        maven { url "http://repo.spring.io/snapshot" }
+    }
+
+    dependencies {
+        classpath "gradle.plugin.gradle-plugins:jartest:1.0"
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+
+}
+
+apply plugin: 'org.springframework.boot'
+apply plugin: 'application'
+
+task copyTestResources(type: Copy) {
+    from "${projectDir}/src/test/resources"
+    into "${buildDir}/resources/main"
+}
+
+dependencies {
+    compile project(":loan-framework")
+
+    compile "org.apache.httpcomponents:httpclient:$httpClientVersion"
+
+    // Spring Boot
+    ['spring-boot-starter-web', 'spring-boot-starter-data-jpa'].each {
+        compile "org.springframework.boot:$it:$springBootVersion"
+    }
+
+    // Need to exclude Tomcat 'cause using Hikari Connection Pool
+    compile("org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion") {
+        exclude group: 'org.apache.tomcat', module: 'tomcat-jdbc'
+    }
+
+    // Hikari connection pool
+    compile "com.zaxxer:HikariCP:$hikariVersion"
+
+    // H2 DB
+    compile 'com.h2database:h2:1.4.196'
+
+    // Test
+    testCompile "org.codehaus.groovy:groovy:$groovyVersion"
+    testCompile "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+    testCompile "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
+
+    testCompile "org.spockframework:spock-spring:1.0-groovy-2.4"
+    testCompile "org.spockframework:spock-core:$spockVersion"
+    testCompile "cglib:cglib-nodep:$cglibVersion"
+    testCompile "com.jayway.jsonpath:json-path:$jaywayPathVersion"
+    testCompile "org.hamcrest:hamcrest-all:$hamcrestVersion"
+}
+
+bootRepackage {
+    mainClass = 'com.company.LoanGateApplication'
+}
+
+bootRun {
+    addResources = true
+}
+

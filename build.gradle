@@ -1,0 +1,93 @@
+
+buildscript {
+
+    repositories {
+        jcenter()
+        mavenLocal()
+        mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url "http://repo.spring.io/libs-snapshot" }
+        maven { url "http://repo.spring.io/release" }
+        maven { url "http://repo.spring.io/milestone" }
+        maven { url "http://repo.spring.io/snapshot" }
+    }
+
+    dependencies {
+        classpath "gradle.plugin.gradle-plugins:jartest:1.0"
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+
+}
+
+description = 'LOAN-WS'
+
+group 'loan-ws'
+
+task wrapper(type: Wrapper) {
+    gradleVersion = "$gradleRootVersion"
+}
+
+
+allprojects {
+    group = 'com.company.loan.gate'
+
+    repositories {
+        jcenter()
+        mavenLocal()
+        mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url "http://repo.spring.io/libs-snapshot" }
+        maven { url "http://repo.spring.io/release" }
+        maven { url "http://repo.spring.io/milestone" }
+        maven { url "http://repo.spring.io/snapshot" }
+    }
+
+    ext {
+
+        forceGroup = [
+                'org.slf4j'                 : "$slf4jVersion",
+                'ch.qos.logback'            : "$logbackVersion"
+        ]
+
+        replaceArtifact = [
+                'commons-logging:commons-logging': "org.slf4j:jcl-over-slf4j:$slf4jVersion",
+                'log4j:log4j'                    : "org.slf4j:log4j-over-slf4j:$slf4jVersion",
+                'org.slf4j:slf4j-log4j12'        : "org.slf4j:slf4j-api:$slf4jVersion"
+        ]
+    }
+
+    apply plugin: 'java'
+    apply plugin: 'groovy'
+    apply plugin: 'idea'
+    apply plugin: 'eclipse'
+    apply plugin: 'io.spring.dependency-management'
+
+}
+
+subprojects { subProject ->
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    dependencies {
+        compile "org.projectlombok:lombok:$lombokVersion"
+        compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+
+        // Logging
+        ['slf4j-api', 'jul-to-slf4j', 'log4j-over-slf4j'].each {
+            compile "org.slf4j:$it:$slf4jVersion"
+        }
+
+        compile "ch.qos.logback:logback-classic:$logbackVersion"
+
+    }
+
+    compileJava.mustRunAfter clean
+
+    compileJava {
+        options.encoding = 'UTF-8'
+    }
+}

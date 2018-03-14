@@ -1,0 +1,48 @@
+server:
+  port: 8080
+
+loan:
+  gate:
+    cachePeriodOfTime: 30000
+    requestLimitPerCountry: 5
+    requestPeriodCounter: 1000
+    rest:
+      connection:
+        connectionRequestTimeout: 30000
+        connectionTimeout: 30000
+---
+spring:
+  profiles:
+    active: test
+  application:
+    name: LoanGate
+  h2:
+    console:
+      enabled: true
+      path: /console
+  datasource:
+    url: jdbc:h2:file:~/h2/fake;DB_CLOSE_ON_EXIT=TRUE
+    username: sa
+    password:
+    driverClassName: org.h2.Driver
+    platform: h2
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+---
+spring:
+  profiles: production
+
+server:
+  port: 18080
+
+---
+spring:
+  profiles: test
+
+server:
+  port: 28282
+
